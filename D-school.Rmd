@@ -1,0 +1,43 @@
+# Students' secondary education provider {#sec:secondary}
+
+(ref:secondary-caption) UK economics students, by secondary education and BME marker
+
+```{r, fig.align="center", fig.cap="(ref:secondary-caption)", fig.placement="h", fig.fullwidth=TRUE, fig.height=5, fig.note="(ref:secondary-note)", label="secondary", fig.path='0-images/'}
+school.plot <- school %>%
+  filter(F_SEXID=="Female") %>%
+  ggplot(., aes(x=ACYEAR, y=percent_fem, linetype=factor(F_ZSTATE_MARKER))) +
+  geom_line() +
+  ylim(25, 32) +
+  labs(x=NULL, y="%", title="% undergraduate women, by secondary school") +
+  scale_linetype_manual(values=c("solid", "dashed"))
+alevels.plot <- alevels %>%
+  filter(F_SEXID=="Female") %>%
+  ggplot(., aes(x=ACYEAR, y=percent_fem, linetype=factor(ECONMKR))) +
+  geom_line() +
+  ylim(25, 32) +
+  labs(x=NULL, y="%", title="% undergraduate women, by A-level subject") +
+  scale_linetype_manual(values=c("longdash", "dotdash"))
+school_bme.plot <- school_bme %>%
+  filter(F_SEXID=="Female") %>%
+  ggplot(., aes(x=ACYEAR, y=percent_fem, linetype=factor(BME_MKR))) +
+  geom_line() +
+  facet_wrap(vars(F_ZSTATE_MARKER)) +
+  labs(x=NULL, y="%", title="% undergraduate women, by secondary school and BME") +
+  theme(panel.spacing.x=unit(4, "mm")) +
+  ylim(20,38) +
+  scale_linetype_manual(values=c("dotted", "twodash"))
+alevels_bme.plot <- alevels_bme %>%
+  filter(F_SEXID=="Female") %>%
+  ggplot(., aes(x=ACYEAR, y=percent_fem, linetype=factor(BME_MKR))) +
+  geom_line() +
+  facet_wrap(vars(ECONMKR)) +
+  labs(x=NULL, y="%", title="% undergraduate women, by A-level subject and BME") +
+  guides(linetype="none") +
+  theme(panel.spacing.x=unit(4, "mm")) +
+  ylim(20,38) +
+  scale_linetype_manual(values=c("dotted", "twodash"))
+
+ggarrange(ggarrange(school.plot, alevels.plot, legend="bottom"), ggarrange(school_bme.plot, alevels_bme.plot, legend="bottom", common.legend = TRUE), nrow=2, ncol=1)
+```
+
+(ref:secondary-note) Top left-hand graph plots the percentage of female undergraduate economics students by type of secondary school; top right-hand graph plots the percentage of female economics undergraduates by A-level subject. Bottom left-hand graph shows the percentages of undergraduate women studying economics by BME marker and type of secondary school; bottom right-hand graph shows the percentages of undergraduate women by BME marker and A-level subject. Data are for full-time male and female undergraduate students domiciled in the UK studying on a standard degree programme. Data omit students with an unknown type of secondary school (left-hand graphs only), A-level subject (right-hand graphs only) and BME marker (bottom two graphs only). Data from HESA.

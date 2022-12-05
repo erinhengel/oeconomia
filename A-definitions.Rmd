@@ -1,0 +1,35 @@
+# Data definitions {#sec:data-definitions}
+
+## Academic staff {.unlisted .unnumbered #staff-definitions}
+
+For staff members, we concentrate our analysis on sex, academic rank, academic employment function, part-/full-time employment status, terms of employment, nationality and ethnicity. Below we briefly describe data definitions; more detailed information is available on [HESA's website](https://www.hesa.ac.uk/support/definitions/staff).
+
+- Sex refers to the sex of the individual as opposed to the gender they identify with. HESA data include three gender categories: male, female and other. In the present analysis, we specifically exclude individuals who do not declare their gender as either male or female. (Given other data restrictions, however, all staff observations are either male or female, anyway.)
+
+- Academic rank (or contract level) records the UCEA or XpertHR defined level of the contract. In most analyses, we only include levels F1 (professor), I0 (senior lecturer/reader), J0 (lecturer B) and K0 (lecturer A).^[See Footnote \@ref(fn:lecAB) for the distinction between "lecturer A" and "lecturer B" positions.] In [Section @sec:staff-temp], we also include L0 (teaching and research assistants).
+
+- Academic employment function refers to the role/categorisation of an academic contract (teaching only, teaching and research or research only); staff members without teaching or research responsibilities are excluded from all analyses.
+
+- Part-/full-time status is attributed to the contract; thus, an individual working full time on multiple part-time contracts would be represented as multiple part-time instances in the data.
+
+- Terms of employment describe the type of contract an employee holds (open-ended/permanent or fixed-term); all analyses exclude staff members employed on atypical contracts.
+
+- Nationality refers to the country of legal nationality.
+
+- Ethnicity data are voluntarily self-reported according to the coding framework recommended by the Office for National Statistics. To comply with HESA's rounding and suppression strategy, we categorise the ethnicity of academic staff as follows: "white" includes individuals from any white ethnic background; "Black" includes individuals from a Black Caribbean, Black African or other Black background; and "Asia" includes individuals from an Indian, Pakistani, Bangladeshi, Chinese or other Asian background.
+
+## Students {.unlisted .unnumbered #students-definitions}
+
+For students, we concentrate much of our analysis on sex, level of study, nationality, domicile, state school marker, A-level subject, ethnicity and BME marker. Data descriptions not already defined above for academic staff are briefly summarised below; for further details, please consult [HESA's website](https://www.hesa.ac.uk/support/definitions/students).
+
+- Level of study refers to either undergraduate (first-degree) or postgraduate (master's or doctorate) study. Students studying on non-first-degree undergraduate programmes or non-master's/doctorate postgraduate programmes are omitted from all analyses.
+
+- Domicile refers to the location of a student's permanent home address prior to starting study.
+
+- State school marker indicates whether a student obtained his or her secondary education from a state school or a privately funded school or college.
+
+- A-level subject indicates whether the student obtained an economics A-level or not.
+
+- Student ethnicity is categorised as follows: "white" includes individuals from any white ethnic background; "Black" includes individuals from a Black Caribbean, Black African or other Black background; "South Asia" includes individuals from an Indian, Pakistani or Bangladeshi background; and "Other Asia" includes individuals from a Chinese or other Asian background.
+
+- Black and minority ethnicity (BME) marker indicates whether a student's ethnicity is categorised as either Black, Asian, Mixed or Other.

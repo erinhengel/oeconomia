@@ -1,0 +1,170 @@
+\documentclass[a4paper, 1]{article}
+\usepackage{lmodern}
+\usepackage{amssymb,amsmath}
+\usepackage{bm}
+\usepackage{upgreek}
+\usepackage{enumitem}
+\usepackage{ifxetex,ifluatex}
+\usepackage{fixltx2e}
+\usepackage[margin=2.54cm]{geometry}
+\usepackage{mathspec}
+\usepackage{pifont}
+\usepackage{dcolumn}
+\usepackage{tocloft} % must go before subfig
+\usepackage{subfig}
+\usepackage{booktabs}
+\usepackage{tabularx}
+\usepackage{array}
+\usepackage{ragged2e}
+\usepackage{xfrac}
+\usepackage{threeparttable}
+\usepackage{threeparttablex}
+\usepackage{multirow}
+\usepackage{siunitx}
+\usepackage{setspace}
+\usepackage{longtable,booktabs}
+\usepackage{parskip}
+\usepackage[titletoc,title]{appendix}
+\usepackage{titletoc}
+\usepackage{color}
+\usepackage{tabu}
+\usepackage{multirow}
+\definecolor{darkblue}{rgb}{0.0,0,.6}
+\definecolor{maroon}{rgb}{0.68,0,0}
+\definecolor{carageen}{rgb}{0,0.369,0.086}
+\usepackage{lscape}
+\usepackage{rotating}
+\usepackage{etoolbox}
+
+\usepackage{hyperref}
+\hypersetup{unicode=true,
+            pdftitle={$title-meta$},
+            pdfauthor={$for(author)$$author.name$$sep$; $endfor$},
+            pdfborder={0 0 0},
+            breaklinks=false,
+            hypertexnames=false,
+            colorlinks,
+            citecolor=darkblue,
+            linkcolor=maroon
+            }
+\usepackage[
+  backend=biber,
+  style=authoryear,
+  natbib=false,
+  backref=false,
+  hyperref=true,
+  citestyle=authoryear,
+  sortcites,
+	sorting=nyt,
+	uniquelist=false,
+	uniquename=false,
+	url=false,
+	isbn=false,
+	giveninits=false,
+	useprefix=true,
+	doi=false
+]{biblatex}
+\addbibresource{$bibliography$}
+
+% SI setup
+\sisetup{
+  input-symbols=(),
+  table-align-text-post=false,
+  input-decimal-markers={.},
+  group-digits=integer,
+  round-mode=places,
+  round-precision=3,
+  tight-spacing=true,
+  group-separator={},
+  group-minimum-digits=4,
+  table-format=5.4}
+
+% Spacing
+\setstretch{1.2}
+\setlength{\abovecaptionskip}{15pt plus 3pt minus 2pt}
+\setlength{\belowcaptionskip}{5pt plus 3pt minus 2pt}
+
+% Table notes fontsize.
+\appto\TPTnoteSettings{\footnotesize}
+
+% TOC format
+\renewcommand*{\cftsecdotsep}{4.5}  % use dots in the section entries
+\setcounter{tocdepth}{4}
+
+% Appendix name.
+\renewcommand\appendixname{Appendices}
+\renewcommand\appendixpagename{Appendices}
+
+% Landscape
+\newcommand{\blandscape}{\begin{landscape}}
+\newcommand{\elandscape}{\end{landscape}}
+
+% Redefine biblatex macros
+% no "In:" for journals, volume (issue), italicise et al., etc.
+\renewbibmacro{in:}{\ifentrytype{article}{}{\printtext{\bibstring{in}\intitlepunct}}}
+\renewbibmacro*{volume+number+eid}{%
+	\printfield{volume}%
+	\setunit*{\addnbthinspace}%
+	\printfield{number}%
+	\setunit{\addcomma\space}%
+	\printfield{eid}}
+\DeclareFieldFormat[article]{number}{\mkbibparens{#1}}
+\renewbibmacro*{name:andothers}{% Based on name:andothers from biblatex.def
+  \ifboolexpr{
+    test {\ifnumequal{\value{listcount}}{\value{liststop}}}
+    and
+    test \ifmorenames
+  }
+    {\ifnumgreater{\value{liststop}}{1}
+       {\finalandcomma}
+       {}%
+     \andothersdelim\bibstring[\emph]{andothers}}
+    {}}
+
+% This is required for pandoc.
+$if(csl-refs)$
+\newlength{\cslhangindent}
+\setlength{\cslhangindent}{1.5em}
+\newenvironment{cslreferences}%
+  {$if(csl-hanging-indent)$\setlength{\parindent}{0pt}%
+  \everypar{\setlength{\hangindent}{\cslhangindent}}\ignorespaces$endif$}%
+  {\par}
+$endif$
+
+% Shortcuts
+\newcommand{\vect}[1]{\mathbf{#1}}
+
+
+\let\BeginKnitrBlock\begin \let\EndKnitrBlock\end
+
+\DeclareGraphicsExtensions{%
+    .pdf,.PDF,%
+    .png,.PNG,%
+    .jpg,.jpeg}
+
+\date{$date$}
+\def\square{{\Box}}
+\title{\LARGE{$title$}\thanks{$acknowledgements$}}
+\author{\onehalfspacing
+  $for(authors)$$authors.name$\thanks{$authors.affiliation$, $authors.email$.}$sep$ \and $endfor$
+}
+\renewcommand\abstractname{\normalfont\textsc{Abstract}}
+
+\begin{document}
+\maketitle
+
+\begin{abstract}
+\noindent $abstract$
+\end{abstract}
+
+\pagenumbering{gobble}
+\clearpage
+\pagenumbering{arabic}
+
+$body$
+
+$for(include-after)$
+$include-after$
+$endfor$
+
+\end{document}

@@ -1,0 +1,347 @@
+# Findings {#sec:findings}
+
+## Academic staff {#sec:staff}
+
+### Academic rank {#sec:contract-level}
+
+(ref:contract-table-caption) UK academic economists in 2018, by academic rank
+
+```{r, results="asis", tab.note="(ref:contract-table-note)"}
+contracts %>%
+  mutate(Male=RoundTo(Male, 5), Female=RoundTo(Female, 5), Total=RoundTo(Total, 5)) %>%
+  kable(booktabs=TRUE, digits=0, label="contract", format.args=list(big.mark=","), caption="(ref:contract-table-caption)", col.names=c("Academic rank", "Male", "Female", "Total", "% female", "Male (%)", "Female (%)")) %>%
+  row_spec(c(4), hline_after=TRUE) %>%
+  add_header_above(c("", " "=4, "Dist. across rank"=2)) %>%
+  footnote(general="(ref:contract-table-note)", threeparttable = TRUE, footnote_as_chunk = TRUE, general_title = "Note.")
+```
+
+(ref:contract-table-note) Table displays information on economists employed on a standard academic contract (*i.e.*, full-time, permanent with both teaching and research responsibilities) by a UK institute of higher education during the 2018--19 academic year. First three columns show raw FTE counts; the fourth column displays the representation of women in each rank as a percentage of the total; the fifth (sixth) column shows the distribution of men (women) by rank as a percentage of all men (women). Data from HESA.
+
+In UK academic economics, women are substantially more likely to be employed at lower academic ranks. The first three columns in Table \@ref(tab:contract) report the numbers of economists employed in 2018 on a "standard" academic contract---*i.e.*, full-time, permanent contract with both teaching and research responsibilities---at a UK institute of higher education. In aggregate, `r format(RoundTo(subset(contracts, subset=F_LEVELS=="Total", select="Total")[[1]], 5), big.mark=",")` economists satisfy these employment conditions, `r RoundTo(subset(contracts, subset=F_LEVELS=="Total", select="Female")[[1]], 5)` of whom are women (`r round(subset(contracts, subset=F_LEVELS=="Total", select="percent_fem")[[1]])` percent). Women make up `r round(100*sum(subset(contracts, subset=F_LEVELS=="Lecturer (A)"|F_LEVELS=="Lecturer (B)", select="Female"))/sum(subset(contracts, subset=F_LEVELS=="Lecturer (A)"|F_LEVELS=="Lecturer (B)", select="Total")))` percent of lecturers (A and B combined), `r round(subset(contracts, subset=F_LEVELS=="Reader/SL", select="percent_fem"))` percent of senior lecturers/readers and `r round(subset(contracts, subset=F_LEVELS=="Professor", select="percent_fem"))` percent of professors.^[\label{fn:lecAB}Lecturer A positions correspond to a lower pay grade compared to lecturer B positions to grade 8 (see the [higher education pay framework agreement](https://www.ucu.org.uk/framework)). Unless otherwise mentioned, "lecturer" combines both categories.]
+
+Table \@ref(tab:contract)'s final two columns display each gender's distribution across academic rank. Among all female economists employed on a standard academic contract, more than one in two are lecturers (`r round(subset(contracts, subset=F_LEVELS=="Lecturer (A)", select=dist_female)[[1]])` percent Lecturer A and `r round(subset(contracts, subset=F_LEVELS=="Lecturer (B)", select=dist_female)[[1]])` percent Lecturer B), a little under one in three is a senior lecturer/reader (`r round(subset(contracts, subset=F_LEVELS=="Reader/SL", select=dist_female)[[1]])` percent) and a little over one in seven is a professor (`r round(subset(contracts, subset=F_LEVELS=="Professor", select=dist_female)[[1]])` percent). The picture is remarkably different for men: out of every three men, roughly one is a professor (`r round(subset(contracts, subset=F_LEVELS=="Professor", select=dist_male)[[1]])` percent), one is a senior lecturer/reader (`r round(subset(contracts, subset=F_LEVELS=="Reader/SL", select=dist_male)[[1]])` percent) and one is a lecturer (B) (`r round(subset(contracts, subset=F_LEVELS=="Lecturer (B)", select=dist_male)[[1]])` percent). Only a small percentage of male academic economists are on lecturer A contracts (`r round(subset(contracts, subset=F_LEVELS=="Lecturer (A)", select=dist_male)[[1]])` percent).
+
+(ref:contract-caption) UK academic economists over time, by academic rank
+
+```{r, fig.align="center", fig.cap="(ref:contract-caption)", fig.note="(ref:contract-note)", label="contract", fig.path='0-images/'}
+rank.plot1 <- hesa_fper %>%
+  bind_rows(res_fper %>% filter(gender=="Female")) %>%
+  mutate(contract = factor(contract, levels=c("Lecturer (B)", "Reader/SL", "Professor", ordered=TRUE))) %>%
+  ggplot(., aes(x=year, y=percent, linetype=dtype, colour=contract)) +
+  geom_line() +
+  labs(x=NULL, y="%", title="% women, by academic rank") +
+  scale_linetype_manual(values=c("dashed", "solid")) +
+  theme(aspect.ratio=0.3)
+rank.plot2 <- hesa_rank %>%
+  bind_rows(res_rank) %>%
+  mutate(contract = factor(contract, levels=c("Lecturer (B)", "Reader/SL", "Professor", ordered=TRUE))) %>%
+  ggplot(., aes(x=year, y=percent, linetype=dtype, colour=contract)) +
+  geom_line() +
+  facet_wrap(vars(gender), nrow=1) +
+  labs(x=NULL, y="%", title="Distribution across academic rank, by gender") +
+  scale_linetype_manual(values=c("dashed", "solid")) +
+  theme(aspect.ratio=0.5, strip.placement="outside")
+ggarrange(rank.plot1, rank.plot2, ncol=1, common.legend=TRUE, legend="bottom")
+```
+
+(ref:contract-note) Top figure plots the percentage of women employed as lecturers (B lecturers, only), senior lecturers/readers and professors. Bottom graphs plot the fraction of all female economists (left) and all male economists (right) employed in each academic rank. Solid lines represent RES survey data; dashed lines are based on HESA data. Data restricted to standard academic contracts, defined as being full-time, permanent contracts with responsibilities for both teaching and research. Data from HESA and RES.
+
+The overall growth in women's representation in economics is upward, but seems to have stalled since 2012, particularly among lecturers and professors. Figure \@ref(fig:contract)'s top graph plots the percentage of women employed in lecturer B positions (red), as senior lecturers/readers (green) and as professors (blue); solid and dashed lines represent RES survey data and HESA data, respectively.^[\label{fn:lecA}To ensure RES survey and HESA samples are as similar as possible, we omit lecturer A positions from the HESA data and include only lecturers with permanent positions from the RES survey data.] In 1996, approximately `r round(subset(res_fper, subset=contract=="Professor"&year==1996&gender=="Female", select=percent)[[1]])` percent of professors, `r round(subset(res_fper, subset=contract=="Reader/SL"&year==1996&gender=="Female", select=percent)[[1]])` percent of senior lecturers/readers and `r round(subset(res_fper, subset=contract=="Lecturer (B)"&year==1996&gender=="Female", select=percent)[[1]])` percent of lecturers were female. By 2018, these shares had increased to `r round(subset(hesa_fper, subset=contract=="Professor"&year==2018, select=percent)[[1]])`, `r round(subset(hesa_fper, subset=contract=="Reader/SL"&year==2018, select=percent)[[1]])` and `r round(subset(hesa_fper, subset=contract=="Lecturer (B)"&year==2018, select=percent)[[1]])` percent, respectively. For lecturers and professors, however, much of this growth occurred before 2012; after that, the percentage of women in each role increased only `r round(subset(hesa_fper, subset=contract=="Lecturer (B)"&year==2018, select=percent)[[1]]-subset(hesa_fper, subset=contract=="Lecturer (B)"&year==2012, select=percent)[[1]], digits=1)` and `r format(round(subset(hesa_fper, subset=contract=="Professor"&year==2018, select=percent)[[1]]-subset(hesa_fper, subset=contract=="Professor"&year==2012, select=percent)[[1]], digits=1), nsmall=1)` percentage points, respectively. Women's representation among senior lecturers/readers grew much more (`r round(subset(hesa_fper, subset=contract=="Reader/SL"&year==2018, select=percent)[[1]]-subset(hesa_fper, subset=contract=="Reader/SL"&year==2012, select=percent)[[1]])` percentage points).
+
+Temporal changes in the fraction of all men and all women at each academic rank are shown in the bottom two graphs of Figure \@ref(fig:contract).^[Each graph in the second row of Figure \@ref(fig:contract) displays the percentage of academic economists employed by rank in a particular year for the given gender; thus, conditional on year and gender, the percentages for each rank sum to 100.] In 1996, roughly one in every two male academics was a lecturer, one in four was a senior lecturer/reader and another one in four was a professor. As already discussed, these proportions had changed dramatically by 2018: men were about equally represented in all three categories. The 1996 position for women was vastly different---almost three quarters of female staff members were lecturers and only 1 in sixteen was a professor. And while these gaps have closed substantially, female economists in UK academia are still far more likely to be lecturers than they are to be senior lecturers/readers and, especially, professors.
+
+Figure \@ref(fig:contract) allows us to compare HESA data with the RES survey data collected between 1996--2016. In all three graphs, HESA data for professors tracks the RES survey data closely during the overlapping period (2012--2016). But compared to the HESA data, the RES survey data over-estimates the fraction of women among senior lecturers/readers as well as the fraction of senior lecturers/readers among women and under-estimates the fraction of lecturers among women. These differences, however, are relatively minor; both data sources suggest similar conclusions about the representation of female economists in UK academia.^[These discrepancies are caused by small variations in the institutions covered by each dataset as well as differences in how posts are categorised.]
+
+### Academic employment function
+
+(ref:emp-function-caption) UK Academic economists, by academic employment function
+
+```{r, fig.align="center", fig.cap="(ref:emp-function-caption)", fig.fullwidth=TRUE, fig.height=3, fig.note="(ref:emp-function-note)", label="emp-function", fig.path='0-images/'}
+emp_all_fem.plot1 <- emp_all_fem %>%
+  filter(F_SEXID=="Female") %>%
+  ggplot(., aes(x=ACYEAR, y=percent_1, linetype=factor(F_ACEMPFUN))) +
+  geom_line() +
+  scale_linetype_manual(values=c("dashed", "solid", "dotted")) +
+  labs(x=NULL, y="%", title="% women, by employment function") +
+  guides(linetype="none")
+emp_all_fem.plot2 <- ggplot(emp_all_fem, aes(x=ACYEAR, y=percent_2, linetype=factor(F_ACEMPFUN), colour=F_SEXID)) +
+  geom_line() +
+  facet_wrap(vars(F_ACEMPFUN)) +
+  scale_linetype_manual(values=c("dashed", "solid", "dotted")) +
+  labs(x=NULL, y="%", title="Distribution across employment function, by gender") +
+  theme(panel.spacing.x=unit(4, "mm")) +
+  guides(linetype=guide_legend(order=1)) +
+  scale_x_continuous(breaks = c(2012,2016))
+ggarrange(emp_all_fem.plot1, emp_all_fem.plot2, common.legend=TRUE, legend="bottom")
+```
+
+(ref:emp-function-note) Left-hand graph plots the percentage of women employed in teaching-only, research-only and teaching and research (T&R) positions. Right-hand graph plots the percentages of all female economists and all male economists across employment function. Data restricted to full-time, permanent contracts held by lecturers, senior lecturers/readers and professors. Data from HESA.
+
+When we break down data by academic employment function, we find that women have been gaining ground in teaching-only and research-only positions, but have made slower progress obtaining more traditional (and generally more prestigious) positions with both responsibilities (Figure \@ref(fig:emp-function), left-hand graph).^[Teaching-only positions make-up `r round(100*emp_all[1,"percent"][[1]])` percent of people working in economics academia on a full-time permanent contract; research-only positions make up a further `r round(100*emp_all[2,"percent"][[1]])` percent. The remaining `r round(100*emp_all[3,"percent"][[1]])` percent have responsibilities for both teaching and research.] Between 2012--2018, the representation of women among academic economists employed on a permanent, full-time basis at lecturer-level or above but with only teaching or research responsibilities increased `r round(subset(emp_all_fem, subset=F_SEXID=="Female"&F_ACEMPFUN=="Teaching"&ACYEAR==2018, select=percent_1)[[1]]-subset(emp_all_fem, subset=F_SEXID=="Female"&F_ACEMPFUN=="Teaching"&ACYEAR==2012, select=percent_1)[[1]], digits=1)` and `r round(subset(emp_all_fem, subset=F_SEXID=="Female"&F_ACEMPFUN=="Research"&ACYEAR==2018, select=percent_1)[[1]]-subset(emp_all_fem, subset=F_SEXID=="Female"&F_ACEMPFUN=="Research"&ACYEAR==2012, select=percent_1)[[1]], digits=1)` percentage points, respectively; the corresponding figure for teaching and research (T&R) positions was just `r round(subset(emp_all_fem, subset=F_SEXID=="Female"&F_ACEMPFUN=="T&R"&ACYEAR==2018, select=percent_1)[[1]]-subset(emp_all_fem, subset=F_SEXID=="Female"&F_ACEMPFUN=="T&R"&ACYEAR==2012, select=percent_1)[[1]])` percentage points.
+
+Women are (in relative terms) over-represented in teaching- and research-only positions and under-represented in most positions that combine both responsibilities (Figure \@ref(fig:emp-function), right-hand graph). The share of women among T&R staff is consistently lower than the corresponding share for men---in 2018, `r round(100*emp_sex[emp_sex$F_ACEMPFUN=="T&R"&emp_sex$F_SEXID=="Female", "percent"][[1]])` percent and `r round(100*emp_sex[emp_sex$F_ACEMPFUN=="T&R"&emp_sex$F_SEXID=="Male", "percent"][[1]])` percent, respectively, for a difference of `r round(subset(emp_all_fem, ACYEAR==2018&F_SEXID=="Male"&F_ACEMPFUN=="T&R", select="percent_2")[[1]]-subset(emp_all_fem, ACYEAR==2018&F_SEXID=="Female"&F_ACEMPFUN=="T&R", select="percent_2")[[1]])` percentage points. Worryingly, this gap has *widened* over time. (In 2012, it was only `r round(subset(emp_all_fem, ACYEAR==2012&F_SEXID=="Male"&F_ACEMPFUN=="T&R", select="percent_2")[[1]]-subset(emp_all_fem, ACYEAR==2012&F_SEXID=="Female"&F_ACEMPFUN=="T&R", select="percent_2")[[1]])` percentage points.) Meanwhile, the proportion of all women in teaching only positions (`r round(100*emp_sex[emp_sex$F_ACEMPFUN=="Teaching"&emp_sex$F_SEXID=="Female", "percent"][[1]])` percent) is greater than the proportion of all men in those same positions (`r round(100*emp_sex[emp_sex$F_ACEMPFUN=="Teaching"&emp_sex$F_SEXID=="Male", "percent"][[1]])` percent), meaning a greater fraction of female academic economists are employed on teaching-only contracts compared to men. Again, this gap has been increasing (in magnitude) over time: in 2012, teaching-only appointments were `r round(abs(subset(emp_all_fem, ACYEAR==2012&F_SEXID=="Male"&F_ACEMPFUN=="Teaching", select="percent_2")[[1]]-subset(emp_all_fem, ACYEAR==2012&F_SEXID=="Female"&F_ACEMPFUN=="Teaching", select="percent_2")[[1]]))` percentage points more common among women; by 2018, that difference had increased to `r round(abs(subset(emp_all_fem, ACYEAR==2018&F_SEXID=="Male"&F_ACEMPFUN=="Teaching", select="percent_2")[[1]]-subset(emp_all_fem, ACYEAR==2018&F_SEXID=="Female"&F_ACEMPFUN=="Teaching", select="percent_2")[[1]]))` percentage points. Women are also slightly over-represented among research-only positions, but the gap between genders has remained relatively constant over time.
+
+As expected, women make up a greater fraction of all three employment functions at lower academic ranks. Since the percentage of women in T&R positions is described in [Section @sec:contract-level], we focus on teaching-only and research-only positions here. In 2018, women constituted `r round(100*subset(emp, subset=F_SEXID=="Female"&ACYEAR==2018&F_LEVELS=="Lecturer"&F_ACEMPFUN=="Teaching", select=percent)[[1]])` percent of teaching-only lecturer positions and `r round(100*subset(emp, subset=F_SEXID=="Female"&ACYEAR==2018&F_LEVELS=="Reader/SL/Prof"&F_ACEMPFUN=="Teaching", select=percent)[[1]])` percent of teaching-only senior lecturers/readers and professors. Among research-only contracts, women made up `r round(100*subset(emp, subset=F_SEXID=="Female"&ACYEAR==2018&F_LEVELS=="Lecturer"&F_ACEMPFUN=="Research", select=percent)[[1]])` percent of lecturer positions. The numbers of senior lecturers, readers and professors on research contracts is negligible.
+
+### Part-time employment
+
+(ref:part-time-caption) UK academic economists working part-time, by academic rank and employment function
+
+```{r, fig.align="center", fig.cap="(ref:part-time-caption)", fig.fullwidth=TRUE, fig.height=5, fig.note="(ref:part-time-note)", label="part-time", fig.path='0-images/'}
+parttime_rank.plot1 <- parrtime_rank %>%
+  filter(F_SEXID=="Female") %>%
+  ggplot(., aes(x=ACYEAR, y=percent_fem, linetype=factor(F_LEVELS))) +
+  geom_line() +
+  scale_linetype_manual(values=c("dotdash", "longdash")) +
+  labs(x=NULL, y="%", title="% women, by academic rank") +
+  guides(linetype="none")
+parttime_rank.plot2 <- parrtime_rank %>%
+  ggplot(., aes(x=ACYEAR, y=percent_dist, colour=factor(F_SEXID), linetype=factor(F_LEVELS))) +
+  geom_line() +
+  scale_linetype_manual(values=c("dotdash", "longdash")) +
+  facet_wrap(vars(F_LEVELS)) +
+  labs(x=NULL, y="%", title="Distribution across rank, by gender") +
+  theme(panel.spacing.x=unit(4, "mm"))
+parttime_emp.plot1 <- parttime_emp %>%
+  filter(F_SEXID=="Female") %>%
+  ggplot(., aes(x=ACYEAR, y=percent_fem, linetype=factor(F_ACEMPFUN))) +
+  geom_line() +
+  scale_linetype_manual(values=c("solid", "dotted", "dashed")) +
+  labs(x=NULL, y="%", title="% women, by employment function") +
+  guides(linetype="none")
+parttime_emp.plot2 <- 
+  ggplot(parttime_emp, aes(x=ACYEAR, y=percent_dist, colour=factor(F_SEXID), linetype=factor(F_ACEMPFUN))) +
+  geom_line() +
+  scale_linetype_manual(values=c("solid", "dotted", "dashed")) +
+  facet_wrap(vars(F_ACEMPFUN)) +
+  labs(x=NULL, y="%", title="Distribution across employment function, by gender") +
+  theme(panel.spacing.x=unit(4, "mm"))
+ggarrange(ggarrange(parttime_rank.plot1, parttime_rank.plot2, legend="bottom", common.legend = TRUE), ggarrange(parttime_emp.plot1, parttime_emp.plot2, legend="bottom", common.legend=TRUE), nrow=2, ncol=1)
+```
+
+(ref:part-time-note) Top left-hand graph plots the percentage of part-time academics who are women, broken down by academic rank; the top right-hand graph plots the fraction of all part-time female and male economists across academic rank. Bottom left-hand graph plots the percentage of part-time academics who are women, broken down by academic employment function; the bottom right-hand graph plots the fraction of all part-time female and male economists across academic employment function. Data restricted to lecturers, senior lecturers/readers and professors on permanent contracts; top two graphs additionally restricted to T&R positions. Data from HESA.
+
+Among economists employed on a permanent academic contract with responsibilities for both teaching and research, men in 2018 were slightly more likely than women to be working part-time (`r round(100*subset(parttime_all, subset=F_SEXID=="Male"&F_XMOEMP01=="Part-time"&ACYEAR==2018, select=percent)[[1]])` vs. `r round(100*subset(parttime_all, subset=F_SEXID=="Female"&F_XMOEMP01=="Part-time"&ACYEAR==2018, select=percent)[[1]])` percent, respectively). In 2012, the reverse was true: `r round(100*subset(parttime_all, subset=F_SEXID=="Male"&F_XMOEMP01=="Part-time"&ACYEAR==2012, select=percent)[[1]])` percent of men were working part-time whereas `r round(100*subset(parttime_all, subset=F_SEXID=="Female"&F_XMOEMP01=="Part-time"&ACYEAR==2012, select=percent)[[1]])` percent of women were.
+
+Perhaps even more surprising is how few female economists work part-time in UK academia. As the very first Women's Committee report noted "Part-time employment has become increasingly prevalent throughout the UK labour market and is typically considered to be more popular amongst female employees. [...] UK academia does not appear to follow this pattern, rather 15.7% of academic economists work part-time and only 26.6% of these jobs are held by women." [@Mumford1997, pp. 8--9].^[The authors counted only 11 permanent part-time female academic economists on standard academic contracts in the UK in 1996.] Our data suggest that part-time employment among women in academic economics is still relatively rare: between 2012--2018, only about `r RoundTo(mean((parrtime_rank %>% group_by(ACYEAR, F_SEXID) %>% count(wt=n) %>% filter(F_SEXID=="Female"))[["n"]]),5)` women each year were employed on a part-time, standard academic contract.
+
+The percentage of women in part-time employment is declining in academic rank (top left-hand graph in Figure \@ref(fig:part-time)). In 2018, `r round(subset(parrtime_rank, subset=ACYEAR==2018&F_LEVELS=="Lect/SL/reader"&F_SEXID=="Female", select=percent_fem)[[1]])` percent of lecturers, senior lecturers and readers employed on a part-time basis were women; only `r round(subset(parrtime_rank, subset=ACYEAR==2018&F_LEVELS=="Professor"&F_SEXID=="Female", select=percent_fem)[[1]])` percent of part-time professors were. These figures have remained roughly stable over time.
+
+The top right-hand graph in Figure \@ref(fig:part-time) shows the distribution across rank of female and male part-time economists. Relative to women, men are consistently over-represented among part-time professors and under-represented among part-time lecturers, senior lecturers and readers.^[Some departments have employed senior academics from non-UK institutions on fractional contracts in order to enhance their scores in the UK's national research evaluation exercises [see, *e.g.*, @Stern2016]. This may explain the higher representation of male professors working "part-time" in UK economics departments.] In 2018, men on a part-time contract were least likely to be lecturers, senior lecturers or readers (`r round(subset(parrtime_rank, subset=ACYEAR==2018&F_SEXID=="Male"&F_LEVELS=="Lect/SL/reader", select=percent_dist)[[1]])` percent); the vast majority were professors (`r round(subset(parrtime_rank, subset=ACYEAR==2018&F_SEXID=="Male"&F_LEVELS=="Professor", select=percent_dist)[[1]])` percent). Part-time women, on the other hand, were most likely to be lecturers, senior lecturers or readers (`r round(subset(parrtime_rank, subset=ACYEAR==2018&F_SEXID=="Female"&F_LEVELS=="Lect/SL/reader", select=percent_dist)[[1]])` percent); only `r round(subset(parrtime_rank, subset=ACYEAR==2018&F_SEXID=="Female"&F_LEVELS=="Professor", select=percent_dist)[[1]])` percent were professors. These patterns have not significantly changed since 2012.
+
+Figure \@ref(fig:part-time)'s bottom left-hand graph shows the percentage of part-time economists that are female by academic employment function. This figure hovers between 20 and 30 percent for both teaching-only and T&R positions.^[The numbers of men and women in part-time research-only positions is negligible and has therefore been omitted.] The right-hand graph plots the distribution across employment function; it suggests men and women working part-time are similarly distributed across teaching-only and T&R positions. Again, these patterns have not changed substantially since 2012.
+
+### Temporary employment {#sec:staff-temp}
+
+(ref:fixed-term-caption) UK academic economists on a fixed-term contract, by academic rank
+
+```{r, fig.align="center", fig.cap="(ref:fixed-term-caption)", fig.fullwidth=TRUE, fig.height=3, fig.note="(ref:fixed-term-note)", label="fixed-term", fig.path='0-images/'}
+temp.plot1 <- temp %>%
+  filter(F_SEXID=="Female") %>%
+  ggplot(., aes(x=ACYEAR, y=percent_fem, group=factor(F_LEVELS), linetype=factor(F_LEVELS))) +
+  geom_line() +
+  scale_linetype_manual(values=c("solid", "dashed", "dotted")) +
+  labs(x=NULL, y="%", title="% women, by academic rank") +
+  guides(linetype="none")
+temp.plot2 <- ggplot(temp, aes(x=ACYEAR, y=percent_dist, colour=factor(F_SEXID), linetype=factor(F_LEVELS))) +
+  geom_line() +
+  scale_linetype_manual(values=c("solid", "dashed", "dotted")) +
+  facet_wrap(vars(F_LEVELS)) +
+  labs(x=NULL, y="%", title="Distribution across rank, by gender") +
+  theme(panel.spacing.x=unit(4, "mm")) +
+  scale_x_continuous(breaks = c(2012,2016))
+ggarrange(temp.plot1, temp.plot2, common.legend = TRUE, legend="bottom")
+```
+
+(ref:fixed-term-note) Left-hand graph plots the percentage of academics on a fixed-term contract who are women, broken down by academic rank; right-hand graph plots the percentage of all women and all men on fixed-term contracts across rank. Data restricted to academic economists (including teaching/research assistants) working full- or part-time in any employment function. Data from HESA.
+
+Since 2012, there has been a slight decrease in the number and percentage of academic economists (including teaching and research assistants) employed full-time on a fixed-term contract with responsibilities for both teaching and research: in 2012, `r RoundTo(sum(subset(temp_contracts, subset=ACYEAR==2012&F_TERMS=="Fixed-term", select=n)),5)` economists held these jobs, or `r round(100*sum(subset(temp_contracts, subset=ACYEAR==2012&F_TERMS=="Fixed-term", select=n))/sum(subset(temp_contracts, subset=ACYEAR==2012, select=n)))` percent of full-time T&R staff; by 2018, both figures had fallen to `r RoundTo(sum(subset(temp_contracts, subset=ACYEAR==2018&F_TERMS=="Fixed-term", select=n)),5)` and `r round(100*sum(subset(temp_contracts, subset=ACYEAR==2018&F_TERMS=="Fixed-term", select=n))/sum(subset(temp_contracts, subset=ACYEAR==2018, select=n)))` percent, respectively. The number of staff members on temporary contracts rises when teaching-only, research-only and part-time staff are included---from `r RoundTo(sum(subset(all_temps, subset=ACYEAR==2012&F_TERMS=="Fixed-term", select=n)),5)` in 2012 to `r RoundTo(sum(subset(all_temps, subset=ACYEAR==2018&F_TERMS=="Fixed-term", select=n)),5)` in 2018. As a percentage of all academic contracts, however, the use of fixed-term contracts has fallen slightly---from `r round(100*sum(subset(all_temps, subset=ACYEAR==2012&F_TERMS=="Fixed-term", select=n))/sum(subset(all_temps, subset=ACYEAR==2012, select=n)))` percent of all economics staff in 2012 to `r round(100*sum(subset(all_temps, subset=ACYEAR==2018&F_TERMS=="Fixed-term", select=n))/sum(subset(all_temps, subset=ACYEAR==2018, select=n)))` percent in 2018.
+
+It appears temporary contracts are used in different ways depending on academic rank. Over the 2012--2018 period, the majority (`r round(100*subset(temp_rank, subset=F_LEVELS=="Professor"&F_XMOEMP01=="Part-time"&F_ACEMPFUN=="T&R", select="percent")[[1]])` percent) of professors on temporary contracts were employed in part-time T&R positions. In contrast, fixed-term lecturers and teaching and research assistants were predominantly employed in full-time research-only positions (`r round(100*subset(temp_rank, subset=F_LEVELS=="Lect/TA/RA"&F_XMOEMP01=="Full-time"&F_ACEMPFUN=="Research", select="percent")[[1]])` percent) and part-time teaching-only positions (`r round(100*subset(temp_rank, subset=F_LEVELS=="Lect/TA/RA"&F_XMOEMP01=="Part-time"&F_ACEMPFUN=="Teaching", select="percent")[[1]])` percent). Hardly any senior lecturers and readers are employed on a fixed-term basis (`r round(100*subset(temp_sl, subset=F_TERMS=="Fixed-term", select="percent")[[1]])` percent in 2018).
+
+The fraction of female economists employed in fixed-term posts exceeds their share among permanent positions. In 2018, women constituted `r round(100*subset(temp_contracts, subset=F_TERMS=="Fixed-term"&ACYEAR==2018&F_SEXID=="Female", select=percent_fem)[[1]])` percent of staff (including teaching and research assistants) on fixed-term, full-time T&R contracts; their corresponding share among permanent academic staff was only `r round(100*subset(temp_contracts, subset=F_TERMS=="Permanent"&ACYEAR==2018&F_SEXID=="Female", select=percent_fem)[[1]])` percent.
+
+According to the left-hand graph in Figure \@ref(fig:fixed-term), the percentage of temporary contracts held by women is highest for teaching/research assistants and lecturers (in 2018, `r round(subset(temp, subset=F_LEVELS=="TA/RA"&F_SEXID=="Female"&ACYEAR==2018, select=percent_fem)[[1]])` and `r round(subset(temp, subset=F_LEVELS=="Lecturer"&F_SEXID=="Female"&ACYEAR==2018, select=percent_fem)[[1]])` percent, respectively) and lowest for senior lecturers/readers/professors (`r round(subset(temp, subset=F_LEVELS=="Prof/Reader/SL"&F_SEXID=="Female"&ACYEAR==2018, select=percent_fem)[[1]])` percent). Figure \@ref(fig:fixed-term)'s right-hand graph plots the distribution of women on fixed-term contracts across academic rank. Compared to men, women on temporary contracts are over-represented among lecturers and under-represented among senior lecturers/readers/professors. In 2012, women on a fixed term contract were slightly more likely than men to work as teaching and research assistants; by 2018, the reverse was true.
+
+In general, the fraction of people on temporary contracts who are women is highest for teaching- and research-only positions and lowest for positions with both responsibilities (see Figure \@ref(fig:fixed-term-2) in [Appendix @sec:temp-appendix]). Men's and women's distributions across employment function is roughly similar although men on temporary contracts are slightly more likely to be in T&R and teaching-only positions whereas women are somewhat more likely to be in research-only positions: in 2018, `r round(subset(temp_emp, subset=ACYEAR==2018&F_SEXID=="Female"&F_ACEMPFUN=="Research", select=percent_dist)[[1]])` percent of women and `r round(subset(temp_emp, subset=ACYEAR==2018&F_SEXID=="Male"&F_ACEMPFUN=="Research", select=percent_dist)[[1]])` percent of men employed on a temporary basis held research-only positions, `r round(subset(temp_emp, subset=ACYEAR==2018&F_SEXID=="Female"&F_ACEMPFUN=="Teaching", select=percent_dist)[[1]])` and `r round(subset(temp_emp, subset=ACYEAR==2018&F_SEXID=="Male"&F_ACEMPFUN=="Teaching", select=percent_dist)[[1]])` percent were employed in teaching-only positions and `r round(subset(temp_emp, subset=ACYEAR==2018&F_SEXID=="Female"&F_ACEMPFUN=="T&R", select=percent_dist)[[1]])` and `r round(subset(temp_emp, subset=ACYEAR==2018&F_SEXID=="Male"&F_ACEMPFUN=="T&R", select=percent_dist)[[1]])` percent held positions with both responsibilities.
+
+Conditional on holding a fixed-term contract, women disproportionately work full-time. In 2018, women held `r round(subset(temp_parttime, subset=ACYEAR==2018&F_XMOEMP01=="Full-time"&F_SEXID=="Female", select=percent_fem)[[1]])` percent of full-time fixed-term contracts but only `r round(subset(temp_parttime, subset=ACYEAR==2018&F_XMOEMP01=="Part-time"&F_SEXID=="Female", select=percent_fem)[[1]])` percent of part-time fixed-term contracts. Among academic staff on a fixed-term contract, `r round(subset(temp_parttime, subset=ACYEAR==2018&F_SEXID=="Female"&F_XMOEMP01=="Full-time", select=percent_dist)[[1]])` percent of women work full-time compared to `r round(subset(temp_parttime, subset=ACYEAR==2018&F_SEXID=="Male"&F_XMOEMP01=="Full-time", select=percent_dist)[[1]])` percent of men (Figure \@ref(fig:fixed-term-2), [Appendix @sec:temp-appendix]).
+
+### Nationality
+
+(ref:nationality-caption) UK academic economists, by nationality
+
+```{r, fig.align="center", fig.cap="(ref:nationality-caption)", fig.fullwidth=TRUE, fig.height=3, fig.note="(ref:nationality-note)", label="nationality", fig.path='0-images/'}
+nationality.plot1 <- nationality_efunc %>%
+  filter(F_SEXID=="Female") %>%
+  ggplot(., aes(x=ACYEAR, y=percent_fem, linetype=factor(F_XSNAT01))) +
+  geom_line() +
+  scale_linetype_manual(values=c("solid", "dotted", "longdash")) +
+  facet_wrap(vars(F_ACEMPFUN)) +
+  labs(x=NULL, y="%", title="% women, by nationality and function") +
+  theme(panel.spacing.x=unit(4, "mm"))
+nationality.plot2 <- nationality_rank %>%
+  filter(F_SEXID=="Female") %>%
+  ggplot(., aes(x=ACYEAR, y=percent_fem, linetype=factor(F_XSNAT01))) +
+  geom_line() +
+  scale_linetype_manual(values=c("solid", "dotted", "longdash")) +
+  facet_wrap(vars(F_LEVELS)) +
+  labs(x=NULL, y="%", title="% women, by nationality and rank") +
+  theme(panel.spacing.x=unit(4, "mm")) +
+  scale_x_continuous(breaks = c(2012,2016))
+ggarrange(nationality.plot1, nationality.plot2, common.legend = TRUE, legend="bottom")
+```
+
+(ref:nationality-note) Left-hand graph plots the percentage of women by nationality and academic employment function; right-hand graph plots the percentage of women by nationality and academic rank. Data restricted to lecturers, senior lecturers/readers and professors on permanent, full-time contracts; right-hand graph includes only academics with responsibilities for both teaching and research. Data from HESA.
+
+Almost three-quarters of female economists employed in the UK higher education system are originally from a country outside the UK. Of the `r RoundTo(subset(contracts, subset=F_LEVELS=="Total", select="Female")[[1]],5)` female economists employed in 2018 as a lecturer, senior lecturer/reader or professor on a full-time, permanent T&R contract, only `r RoundTo(subset(nationality, subset=ACYEAR==2018&F_SEXID=="Female"&F_XSNAT01=="UK", select=n)[[1]],5)` were from the UK (`r round(100*subset(nationality, subset=ACYEAR==2018&F_SEXID=="Female"&F_XSNAT01=="UK", select=n)[[1]]/subset(contracts, subset=F_LEVELS=="Total", select="Female")[[1]])` percent). For comparison, of the `r format(RoundTo(subset(contracts, subset=F_LEVELS=="Total", select="Male")[[1]],5),big.mark=",")` male economists employed in 2018 on a standard academic contract, `r RoundTo(subset(nationality, subset=F_XSNAT01=="UK"&ACYEAR==2018&F_SEXID=="Male", select="n")[[1]], 5)` were UK nationals (`r round(100*subset(nationality, subset=F_XSNAT01=="UK"&ACYEAR==2018&F_SEXID=="Male", select="n")[[1]]/subset(contracts, subset=F_LEVELS=="Total", select="Male")[[1]])` percent).
+
+The left-hand graph in Figure \@ref(fig:nationality) plots the percentage of women by nationality and academic employment function. Women from all nationalities are better represented in research- and teaching-only positions compared to T&R positions. In general, the representation of women is lowest among UK academics regardless of employment function. Conditional on holding a T&R post, there are more women among non-UK/EU academic staff members (`r round(subset(nationality, subset=ACYEAR==2018&F_SEXID=="Female"&F_XSNAT01=="Non-UK/EU", select=percent_fem)[[1]])` percent); close behind them are EU/EEA staff members (`r round(subset(nationality, subset=ACYEAR==2018&F_SEXID=="Female"&F_XSNAT01=="EU/EEA", select=percent_fem)[[1]])` percent). Women only make up `r round(subset(nationality, subset=ACYEAR==2018&F_SEXID=="Female"&F_XSNAT01=="UK", select=percent_fem)[[1]])` percent of UK academic economists in T&R positions.
+
+Figure \@ref(fig:nationality)'s right-hand graph plots the percentage of women in UK academia by nationality and rank. For lecturers, women's representation is highest among non-UK staff members (in 2018, `r round(subset(nationality_rank, subset=ACYEAR==2018&F_SEXID=="Female"&F_LEVELS=="Lecturer"&F_XSNAT01=="Non-UK/EU", select=percent_fem)[[1]])` and `r round(subset(nationality_rank, subset=ACYEAR==2018&F_SEXID=="Female"&F_LEVELS=="Lecturer"&F_XSNAT01=="EU/EEA", select=percent_fem)[[1]])` percent for non-UK/EU and EU/EEA staff members, respectively) and lowest among staff members from the UK (`r round(subset(nationality_rank, subset=ACYEAR==2018&F_SEXID=="Female"&F_LEVELS=="Lecturer"&F_XSNAT01=="UK", select=percent_fem)[[1]])` percent). For non-UK academic staff, the percentage of women falls quite a bit at the level of senior lecturer/reader (`r round(subset(nationality_rank, subset=ACYEAR==2018&F_SEXID=="Female"&F_LEVELS=="Reader/SL"&F_XSNAT01=="Non-UK/EU", select=percent_fem)[[1]], digits=1)` and `r round(subset(nationality_rank, subset=ACYEAR==2018&F_SEXID=="Female"&F_LEVELS=="Reader/SL"&F_XSNAT01=="EU/EEA", select=percent_fem)[[1]], digits=1)` percent for non-UK/EU and EU/EEA staff members, respectively); for UK staff, however, women's representation among senior lecturers/readers (`r round(subset(nationality_rank, subset=ACYEAR==2018&F_SEXID=="Female"&F_LEVELS=="Reader/SL"&F_XSNAT01=="UK", select=percent_fem)[[1]])` percent) is slightly higher than their representation among lecturers (`r round(subset(nationality_rank, subset=ACYEAR==2018&F_SEXID=="Female"&F_LEVELS=="Lecturer"&F_XSNAT01=="UK", select=percent_fem)[[1]])` percent). At the professorial level, the share of women drops regardless of nationality (`r round(subset(nationality_rank, subset=ACYEAR==2018&F_SEXID=="Female"&F_LEVELS=="Professor"&F_XSNAT01=="UK", select=percent_fem)[[1]])`, `r round(subset(nationality_rank, subset=ACYEAR==2018&F_SEXID=="Female"&F_LEVELS=="Professor"&F_XSNAT01=="EU/EEA", select=percent_fem)[[1]])` and `r round(subset(nationality_rank, subset=ACYEAR==2018&F_SEXID=="Female"&F_LEVELS=="Professor"&F_XSNAT01=="Non-UK/EU", select=percent_fem)[[1]])` percent for UK, EU/EEA and Non-UK/EU staff members, respectively).
+
+### Ethnicity
+
+(ref:ethnicity-caption) UK academic economists, by ethnicity
+
+```{r, fig.align="center", fig.cap="(ref:ethnicity-caption)", fig.fullwidth=TRUE, fig.height=3, fig.note="(ref:ethnicity-note)", label="ethnicity", fig.path='0-images/'}
+ethnicity_rank %>%
+  filter(F_SEXID=="Female" & !(Ethnicity=="Black"&F_LEVELS=="Reader/SL")) %>%
+  ggplot(., aes(x=ACYEAR, y=percent_fem, linetype=factor(Ethnicity))) +
+  geom_line() +
+  scale_linetype_manual(values=c("solid", "dotted", "longdash")) +
+  facet_wrap(vars(F_LEVELS)) +
+  labs(x=NULL, y="%", title="% women, by ethnicity and rank") +
+  theme(panel.spacing.x=unit(4, "mm"))
+```
+
+(ref:ethnicity-note) Figures plot the percentage of women employed as academic economists in the UK by academic rank and ethnicity. Data restricted to permanent, full-time, T&R contracts at the level of lecturer or above. Due to HESA's rounding and suppression strategy, we are unable to plot the percentage of women among Black senior lecturers/readers, and the number of female black professors of economics is zero; for similar reasons (as well as to enhance readability), we also omit individuals whose ethnicity is classified as other or mixed. See [Appendix @sec:data-definitions] for further information on how ethnicity is categorised. Data from HESA.
+
+In 2018, `r round(100*subset(bme, subset=BME_MKR=="BME"&ACYEAR==2018&F_SEXID=="Female", select=percent)[[1]])` percent of standard academic posts in economics were held by Black and minority ethnic (BME) women. This figure is only `r round(100*(subset(bme, subset=BME_MKR=="BME"&ACYEAR==2018&F_SEXID=="Female", select=percent)[[1]]-subset(bme, subset=BME_MKR=="BME"&F_SEXID=="Female"&ACYEAR==2012, select=percent)[[1]]))` percentage points higher than it was in 2012. For comparison, BME men constituted `r round(100*subset(bme, subset=BME_MKR=="BME"&ACYEAR==2018&F_SEXID=="Male", select=percent)[[1]])` percent of all standard academic contracts in 2018, a `r round(100*(subset(bme, subset=BME_MKR=="BME"&F_SEXID=="Male"&ACYEAR==2018, select=percent)[[1]]-subset(bme, subset=BME_MKR=="BME"&F_SEXID=="Male"&ACYEAR==2012, select=percent)[[1]]))` percentage point increase from 2012.
+
+Figure \@ref(fig:ethnicity) displays the percentage of female economists employed on a standard academic contract by ethnicity and academic rank.^[See [Appendix @sec:data-definitions] for further information on how ethnicity was categorised; due to relatively small numbers and to enhance readability, individuals whose ethnicity is classified as other or mixed are not included.] Women's representation is highest among Asian individuals: in 2018, there were `r RoundTo(sum(subset(ethnicity_rank, subset=ACYEAR==2018&Ethnicity=="Asia"&F_LEVELS=="Lecturer", select=n)), 5)` Asian lecturers, `r round(subset(ethnicity_rank, subset=ACYEAR==2018&Ethnicity=="Asia"&F_SEXID=="Female"&F_LEVELS=="Lecturer", select=percent_fem)[[1]])` percent of whom were women. Among the `r RoundTo(sum(subset(ethnicity_rank, subset=ACYEAR==2018&Ethnicity=="White"&F_LEVELS=="Lecturer", select=n)),5)` white lecturers, `r round(subset(ethnicity_rank, subset=ACYEAR==2018&Ethnicity=="White"&F_SEXID=="Female"&F_LEVELS=="Lecturer", select=percent_fem)[[1]])` percent were women. Of the roughly `r RoundTo(sum(subset(ethnicity_rank, subset=ACYEAR==2018&Ethnicity=="Black"&F_LEVELS=="Lecturer", select=n)),5)` Black lecturers in economics, however, no more than `r RoundTo(subset(ethnicity_rank, subset=ACYEAR==2018&Ethnicity=="Black"&F_LEVELS=="Lecturer"&F_SEXID=="Female", select=n)[[1]],5)` (`r round(subset(ethnicity_rank, subset=ACYEAR==2018&Ethnicity=="Black"&F_SEXID=="Female"&F_LEVELS=="Lecturer", select=percent_fem)[[1]])` percent) were women.^[These results are consistent with @Blanco2010, who found that in 2010, women made up 41 percent of academic economists in the UK with a Chinese background and 30 percent with a South East Asian background. Moreover, of the 121 permanently employed female economics lecturers in their data, only one was Black.]
+
+Among those of Asian ethnicity, the percentage of women declines as academic rank increases: in 2018, there were `r RoundTo(sum(subset(ethnicity_rank, subset=ACYEAR==2018&Ethnicity=="Asia"&F_LEVELS=="Reader/SL", select=n)),5)` Asian senior lecturers/readers and `r RoundTo(sum(subset(ethnicity_rank, subset=ACYEAR==2018&Ethnicity=="Asia"&F_LEVELS=="Professor", select=n)),5)` professors, `r round(subset(ethnicity_rank, subset=ACYEAR==2018&Ethnicity=="Asia"&F_SEXID=="Female"&F_LEVELS=="Reader/SL", select=percent_fem)[[1]])` and `r round(subset(ethnicity_rank, subset=ACYEAR==2018&Ethnicity=="Asia"&F_SEXID=="Female"&F_LEVELS=="Professor", select=percent_fem)[[1]])` percent of whom were women, respectively. Among individuals with white ethnicity, however, the decline is only apparent at the professorial level: the percentage of female senior lecturers/readers is similar to that of lecturers (`r round(subset(ethnicity_rank, subset=ACYEAR==2018&Ethnicity=="White"&F_SEXID=="Female"&F_LEVELS=="Reader/SL", select=percent_fem)[[1]])` and `r round(subset(ethnicity_rank, subset=ACYEAR==2018&Ethnicity=="White"&F_SEXID=="Female"&F_LEVELS=="Lecturer", select=percent_fem)[[1]])` percent in 2018, respectively); the share of female professors is much lower (`r round(subset(ethnicity_rank, subset=ACYEAR==2018&Ethnicity=="White"&F_SEXID=="Female"&F_LEVELS=="Professor", select=percent_fem)[[1]])` percent). Worryingly, the percentage of Asian professors who are women declined `r round(abs(subset(ethnicity_rank, subset=ACYEAR==2018&Ethnicity=="Asia"&F_SEXID=="Female"&F_LEVELS=="Professor", select=percent_fem)-subset(ethnicity_rank, subset=ACYEAR==2012&Ethnicity=="Asia"&F_SEXID=="Female"&F_LEVELS=="Professor", select=percent_fem))[[1]])` percentage points---from `r round(subset(ethnicity_rank, subset=ACYEAR==2012&Ethnicity=="Asia"&F_SEXID=="Female"&F_LEVELS=="Professor", select=percent_fem)[[1]])` percent to `r round(subset(ethnicity_rank, subset=ACYEAR==2018&Ethnicity=="Asia"&F_SEXID=="Female"&F_LEVELS=="Professor", select=percent_fem)[[1]])` percent---between 2012--2018. The decline was especially stark among economists from an Indian, Pakistani and Bangladeshi background.
+
+In 2018, there were no more than `r RoundTo(sum(subset(ethnicity_rank, subset=ACYEAR==2018&Ethnicity=="Black"&F_LEVELS=="Reader/SL", select=n)), 5)` Black senior lecturers/readers in economics employed on a standard academic contract, very few of whom were women. At no point between 2012--2018 was a Black female professor of economics employed anywhere in the UK according to the HESA data.^[This was similarly found to be the case in @Blanco2010. Recall that the data include only those individuals who are based in economics departments or business schools and whose primary and/or secondary research interest is economics as defined by HESA's own subject coding (which distinguishes economics/econometrics from, for example, business and management or social policy).]
+
+Most BME academic economists employed full-time in a permanent post have responsibilities for both teaching and research (`r RoundTo(sum(subset(ethnicity_efunc, subset=ACYEAR==2018&F_ACEMPFUN=="T&R"&F_SEXID=="Female"&BME_MKR=="BME", select=n)),5)` individuals in 2018). A much smaller number (`r RoundTo(sum(subset(ethnicity_efunc, subset=ACYEAR==2018&F_ACEMPFUN=="Teaching"&F_SEXID=="Female"&BME_MKR=="BME", select=n)),5)`) were in teaching-only positions. Hardly any BME academic economists hold research-only positions.
+
+## Students {#sec:students}
+
+### Level of study
+
+(ref:level-table-caption) UK economics students in 2018, by level of study
+
+```{r, results="asis", tab.note="(ref:level-table-note)"}
+levels %>%
+  mutate(F_XLEV601 = recode(F_XLEV601, "Masters" = "Master's")) %>%
+  mutate(Male=RoundTo(Male, 5), Female=RoundTo(Female, 5), Total=RoundTo(Total, 5)) %>%
+  kable(booktabs=TRUE, digits=0, label="level", format.args=list(big.mark=","), caption="(ref:level-table-caption)", col.names=c("Level of study", "Male", "Female", "Total", "% female", "Male (%)", "Female (%)")) %>%
+  row_spec(c(3), hline_after=TRUE) %>%
+  add_header_above(c("", " "=4, "Dist. across level"=2)) %>%
+  footnote(general="(ref:level-table-note)", threeparttable = TRUE, footnote_as_chunk = TRUE, general_title = "Note.")
+```
+
+(ref:level-table-note) Table displays information on full-time male and female students studying economics on a standard degree programme during the 2018--19 academic year at a UK institute of higher education. First three columns show raw numbers; the fourth column displays the representation of women in each level as a percentage of the total; the fifth (sixth) column shows the distribution of men (women) across level. Data from HESA.
+
+In economics, women are more common among taught post-graduate students than they are among undergraduate or Ph.D. students. Table \@ref(tab:level) breaks down the number of full-time students studying economics in a British institute of higher education during the 2018--19 academic year. Total student numbers were `r format(RoundTo(subset(levels, subset=F_XLEV601=="Total", select=Total)[[1]],5), big.mark=",")`; of them, `r format(RoundTo(subset(levels, subset=F_XLEV601=="Total", select="Female")[[1]], 5), big.mark=",")` were women (`r format(round(subset(levels, subset=F_XLEV601=="Total", select=percent_fem)[[1]], digits=1))` percent). Women make up `r round(subset(levels, subset=F_XLEV601=="First degree", select=percent_fem)[[1]])` percent of undergraduate, `r round(subset(levels, subset=F_XLEV601=="Masters", select=percent_fem)[[1]])` percent of master's and `r round(subset(levels, subset=F_XLEV601=="Doctorate", select=percent_fem)[[1]])` percent of Ph.D. students in economics. Table \@ref(tab:level)'s final two columns reinforce this conclusion. They display each gender's distribution across level of study. Compared to women, men disproportionately study economics at the undergraduate level; women disproportionately study it at the master's level. Similar proportions of male and female economics students are working toward a Ph.D.
+
+Overall growth in women's representation among economics students is flat. Nor has there been any recent change to men's and women's distribution across level of study. At no level has there been a substantial increase (or decrease) in the percentage of women studying economics between 2012--2018 (Figure \@ref(fig:level), left-hand graph). The right-hand graph in Figure \@ref(fig:level) displays the fraction of all men and all women by level of study. Men are consistently over-represented among undergraduate students of economics; women are consistently over-represented among master's students.
+
+(ref:level-caption) UK economics students, by level of study
+
+```{r, fig.align="center", fig.cap="(ref:level-caption)", fig.fullwidth=TRUE, fig.height=3, fig.note="(ref:level-note)", label="level", fig.path='0-images/'}
+levels_time.plot1 <- levels_time %>%
+  filter(F_SEXID=="Female") %>%
+  ggplot(., aes(x=ACYEAR, y=percent_fem, linetype=factor(F_XLEV601))) +
+  geom_line() +
+  labs(x=NULL, y="%", title="% women, by level of study") +
+  scale_linetype_manual(values=c("solid", "dashed", "dotted")) +
+  guides(linetype="none")
+levels_time.plot2 <- levels_time %>%
+  mutate(F_XLEV601 = recode(F_XLEV601, "Masters" = "Master's")) %>%
+  ggplot(., aes(x=ACYEAR, y=percent_dist, colour=factor(F_SEXID), linetype=factor(F_XLEV601))) +
+  geom_line() +
+  facet_wrap(vars(F_XLEV601)) +
+  labs(x=NULL, y="%", title="Distribution across level of study, by gender") +
+  scale_linetype_manual(values=c("solid", "dashed", "dotted")) +
+  theme(panel.spacing.x=unit(4, "mm")) +
+  scale_x_continuous(breaks = c(2012,2016))
+ggarrange(levels_time.plot1, levels_time.plot2, common.legend = TRUE, legend="bottom")
+```
+
+(ref:level-note) Left-hand graph plots the percentage of female students in economics by level of study; the right-hand graph displays the fraction of all female and all male economics students across level of study. Data are for full-time male and female students studying on a standard degree programme. Data from HESA.
+
+### Domicile/nationality
+
+(ref:domicile-caption) UK economics students, by domicile
+
+```{r, fig.align="center", fig.cap="(ref:domicile-caption)", fig.fullwidth=TRUE, fig.height=3, fig.note="(ref:domicile-note)", label="domicile", fig.path='0-images/'}
+domicile.plot1 <- domicile %>%
+  filter(F_SEXID=="Female") %>%
+  ggplot(., aes(x=ACYEAR, y=percent_fem, linetype=factor(F_XDOMGR401))) +
+  geom_line() +
+  scale_linetype_manual(values=c("solid", "dotted", "longdash")) +
+  labs(x=NULL, y="%", title="% women, by domicile")
+domicile.plot2 <- domicile_levels %>%
+  filter(F_SEXID=="Female") %>%
+  mutate(F_XLEV601 = recode(F_XLEV601, "Masters" = "Master's")) %>%
+  ggplot(., aes(x=ACYEAR, y=percent_fem, linetype=factor(F_XDOMGR401))) +
+  geom_line() +
+  facet_wrap(vars(F_XLEV601)) +
+  labs(x=NULL, y="%", title="% women, by domicile and study level") +
+  scale_linetype_manual(values=c("solid", "dotted", "longdash")) +
+  theme(panel.spacing.x=unit(4, "mm")) +
+  scale_x_continuous(breaks = c(2012,2016))
+ggarrange(domicile.plot1, domicile.plot2, common.legend = TRUE, legend="bottom")
+```
+
+(ref:domicile-note) Left-hand graph plots the percentage of female students in economics by domicile; right-hand graphs plot the percentages of women, by domicile and study level. Data are for full-time male and female students studying for a standard degree programme and omit students with an unknown domicile. Data from HESA.
+
+The representation of women is especially poor among UK residents. Figure \@ref(fig:domicile)'s left-hand graph plots the percentage of women studying economics full-time at a UK institute of higher education by domicile.^[Domicile refers to the location of a student's permanent home address prior to starting study.] Between 2012--2018, women have consistently made up at least half of all non-UK/EU students and about 40 percent of all EU students. For the UK, however, women represented only `r round(subset(domicile, subset=F_SEXID=="Female"&F_XDOMGR401=="UK"&ACYEAR==2018, select=percent_fem)[[1]])` percent of economics students in 2018; if anything, this figure has slightly declined since 2012, when it was  `r round(subset(domicile, subset=F_SEXID=="Female"&F_XDOMGR401=="UK"&ACYEAR==2012, select=percent_fem)[[1]])` percent. Conclusions are similar when considering students' nationality instead of domicile (see Figure \@ref(fig:domicile-2), [Appendix @sec:student-nationality]).
+
+British women are absent from economics at every level of study. Figure \@ref(fig:domicile)'s right-hand graph plots the percentage of women by study level and domicile. Among economics students domiciled in the UK in 2018, women represented `r round(subset(domicile_levels, subset=F_SEXID=="Female"&F_XDOMGR401=="UK"&ACYEAR==2018&F_XLEV601=="First degree", select=percent_fem)[[1]])` percent of undergraduates, `r round(subset(domicile_levels, subset=F_SEXID=="Female"&F_XDOMGR401=="UK"&ACYEAR==2018&F_XLEV601=="Masters", select=percent_fem)[[1]])` percent of master's students and `r round(subset(domicile_levels, subset=F_SEXID=="Female"&F_XDOMGR401=="UK"&ACYEAR==2018&F_XLEV601=="Doctorate", select=percent_fem)[[1]])` percent of Ph.D. students. In contrast, in 2002 women were 31 and 37 percent of UK-domiciled economics undergraduates and master's students, respectively [@Blanco2013;@Mitka2015], suggesting that both gender gaps have been getting worse over time. There has, however, been a small improvement at the doctoral level: 28 percent of UK-domiciled economics students were women in 2002; that figure rose to 33 percent by 2011 [@Blanco2013] and has remained steady since.
+
+Women's representation is higher among EU-domiciled students, but similarly stable across undergraduates and master's students---in 2018, `r round(subset(domicile_levels, subset=F_SEXID=="Female"&F_XDOMGR401=="EU"&ACYEAR==2018&F_XLEV601=="First degree", select=percent_fem)[[1]])` percent of EU undergraduates and `r round(subset(domicile_levels, subset=F_SEXID=="Female"&F_XDOMGR401=="EU"&ACYEAR==2018&F_XLEV601=="Masters", select=percent_fem)[[1]])` percent of EU master's students were women---before falling among Ph.D. students (`r round(subset(domicile_levels, subset=F_SEXID=="Female"&F_XDOMGR401=="EU"&ACYEAR==2018&F_XLEV601=="Doctorate", select=percent_fem)[[1]])` percent). Between 2012--2018, the share of women among EU Ph.D. students declined `r round(abs(subset(domicile_levels, subset=F_SEXID=="Female"&F_XDOMGR401=="EU"&ACYEAR==2018&F_XLEV601=="Doctorate", select=percent_fem)[[1]]-subset(domicile_levels, subset=F_SEXID=="Female"&F_XDOMGR401=="EU"&ACYEAR==2012&F_XLEV601=="Doctorate", select=percent_fem)[[1]]))` percentage points. Again, conclusions are similar when the analysis is based on nationality instead of domicile (see Figure \@ref(fig:domicile-2), [Appendix @sec:student-nationality]).
+
+Across every degree level, women's representation is highest among non-UK/EU students. Indeed, women made up `r round(subset(domicile_levels, subset=ACYEAR==2018&F_SEXID=="Female"&F_XDOMGR401=="Other"&F_XLEV601=="Masters", select=percent_fem)[[1]])` percent of non-EU/UK students studying economics at the master's level. Thus, the over-representation of women at this level---apparent in Figure \@ref(fig:level)---is clearly due to large inflows of non-UK/EU women coming to the UK to study economics on a taught postgraduate programme.^[Note that non-EU/UK women make up `r round(100*subset(domicile_levels, subset=ACYEAR==2018&F_SEXID=="Female"&F_XDOMGR401=="Other"&F_XLEV601=="Masters", select=n)[[1]]/sum(subset(domicile_levels, subset=ACYEAR==2018&F_SEXID=="Female"&F_XLEV601=="Masters", select=n)))` percent of all female students studying economics at the master's level.]
+
+The top two graphs in Figure \@ref(fig:secondary) ([Appendix  @sec:secondary]) break down the percentage of women among undergraduate economics students domiciled in the UK by type of secondary education and A-level subject. Women are better represented among students who attended state-funded schools and colleges and among students without an economics A-level. Gender differences, however, are slight. In 2018, women made up `r round(subset(school, subset=ACYEAR==2018&F_SEXID=="Female"&F_ZSTATE_MARKER=="State-funded", select=percent_fem)[[1]])` percent of economics undergraduates from state-funded institutions and `r round(subset(school, subset=ACYEAR==2018&F_SEXID=="Female"&F_ZSTATE_MARKER=="Privately funded", select=percent_fem)[[1]])` percent of undergraduates from privately funded (fee paying) schools or colleges. Women represented `r round(subset(alevels, subset=ACYEAR==2018&F_SEXID=="Female"&ECONMKR=="Econ A-level", select=percent_fem)[[1]])` percent of students with an A-level and `r round(subset(alevels, subset=ACYEAR==2018&F_SEXID=="Female"&ECONMKR=="No econ A-level", select=percent_fem)[[1]])` percent of students without one. These patterns have not substantially changed since 2012.
+
+### Ethnicity
+
+(ref:bme-caption) UK economics students by ethnicity/BME marker, over time
+
+```{r, fig.align="center", fig.cap="(ref:bme-caption)", fig.fullwidth=TRUE, fig.height=3, fig.note="(ref:bme-note)", label="bme", fig.path='0-images/'}
+ethnicity_undergrad.plot <- ethnicity_undergrad %>%
+  filter(F_SEXID=="Female") %>%
+  ggplot(., aes(x=ACYEAR, y=percent_fem, linetype=factor(Ethnicity))) +
+  geom_line() +
+  labs(x=NULL, y="%", title="% undergraduate women, by ethnicity") +
+  scale_linetype_manual(values=c("solid", "dotdash", "longdash", "dotted")) +
+  ylim(22,40) +
+  theme(legend.key.width = unit(0.5,"cm"))
+bme_level.plot <- bme_level %>%
+  filter(F_SEXID=="Female") %>%
+  mutate(F_XLEV601 = recode(F_XLEV601, "Masters" = "Master's")) %>%
+  ggplot(., aes(x=ACYEAR, y=percent_fem, linetype=factor(BME_MKR))) +
+  geom_line() +
+  facet_wrap(vars(F_XLEV601)) +
+  labs(x=NULL, y="%", title="% women, by BME and level of study") +
+  ylim(22,40) +
+  theme(panel.spacing.x=unit(4, "mm")) +
+  scale_x_continuous(breaks = c(2012,2016))
+legend = arrangeGrob(get_legend(ethnicity_undergrad.plot), get_legend(bme_level.plot), widths=c(1,0.75), nrow=1)
+figures = arrangeGrob(ethnicity_undergrad.plot+guides(linetype="none"), bme_level.plot+guides(linetype="none"), nrow=1)
+grobs = arrangeGrob(figures, legend, heights=c(10,1))
+ggarrange(grobs)
+```
+
+(ref:bme-note) Left-hand graph plots the percentage of female undergraduate economics students in the UK by ethnicity; right-hand graph plots the percentage of women among BME and non-BME students by level of study. Data are for full-time male and female students studying on a standard degree programme; left-hand graph excludes individuals whose ethnicity is unknown, other or mixed; right-hand graph excludes students with an unknown BME marker. See [Appendix @sec:data-definitions] for further information on how ethnicity was categorised. Data from HESA.
+
+Non-white women are more likely to study economics than white women. The left-hand graph in Figure \@ref(fig:bme) plots the percentage of female undergraduate women by ethnicity.^[The percentages of female students in Figure \@ref(fig:bme) are lower (particularly at the master's level) than those shown in Table \@ref(tab:contract) because non-UK domiciled students are disproportionately likely to have an unknown ethnicity.] The representation of women is highest among "other" (*i.e.*, non-South) Asian (`r round(subset(ethnicity_undergrad, subset=ACYEAR==2018&F_SEXID=="Female"&Ethnicity=="Other Asia", select=percent_fem)[[1]])` percent) and Black (`r round(subset(ethnicity_undergrad, subset=ACYEAR==2018&F_SEXID=="Female"&Ethnicity=="Black", select=percent_fem)[[1]])` percent) students, although the percentage for Black students has declined `r round(subset(ethnicity_undergrad, subset=ACYEAR==2012&F_SEXID=="Female"&Ethnicity=="Black", select=percent_fem)[[1]]-subset(ethnicity_undergrad, subset=ACYEAR==2018&F_SEXID=="Female"&Ethnicity=="Black", select=percent_fem)[[1]])` points since 2012. South Asian and white students have the lowest percentages of women: in 2018, only `r round(subset(ethnicity_undergrad, subset=ACYEAR==2018&F_SEXID=="Female"&Ethnicity=="South Asia", select=percent_fem)[[1]])` and `r round(subset(ethnicity_undergrad, subset=ACYEAR==2018&F_SEXID=="Female"&Ethnicity=="White", select=percent_fem)[[1]])` percent, respectively. These patterns have remained relatively stable since 2012.
+
+But while women are better represented among BME students than they are among non-BME students at the undergraduate and master's level, the reverse is true for Ph.D. students. The right-hand graph in Figure \@ref(fig:bme) plots the percentage of women by BME status and level of study. In 2018, the gaps between the shares of women among BME and non-BME students was `r round(subset(bme_level, subset=ACYEAR==2018&F_SEXID=="Female"&BME_MKR=="BME"&F_XLEV601=="First degree", select=percent_fem)[[1]]-subset(bme_level, subset=ACYEAR==2018&F_SEXID=="Female"&BME_MKR=="Non-BME"&F_XLEV601=="First degree", select=percent_fem)[[1]])` percentage points for students taking their first degree and `r round(subset(bme_level, subset=ACYEAR==2018&F_SEXID=="Female"&BME_MKR=="BME"&F_XLEV601=="Masters", select=percent_fem)[[1]]-subset(bme_level, subset=ACYEAR==2018&F_SEXID=="Female"&BME_MKR=="Non-BME"&F_XLEV601=="Masters", select=percent_fem)[[1]])` percentage points for master's students. Among doctoral students, however, the representation of women was `r round(abs(subset(bme_level, subset=ACYEAR==2018&F_SEXID=="Female"&BME_MKR=="BME"&F_XLEV601=="Doctorate", select=percent_fem)[[1]]-subset(bme_level, subset=ACYEAR==2018&F_SEXID=="Female"&BME_MKR=="Non-BME"&F_XLEV601=="Doctorate", select=percent_fem)[[1]]))` percentage points higher among non-BME students than it was among BME students.
+
+The bottom two graphs in Figure \@ref(fig:secondary) ([Appendix  @sec:secondary]) plot the percentages of BME and non-BME economics undergraduates students who are women by type of secondary school and A-level subject. The percentage of women among BME students is higher than it is among non-BME students regardless of secondary school type or A-level subject. These patterns have not changed much with time; the exception is the percentage of BME students without an economics A-level that are women, which has declined from `r round(subset(alevels_bme, subset=ACYEAR==2012&F_SEXID=="Female"&ECONMKR=="No econ A-level"&BME_MKR=="BME", select=percent_fem)[[1]])` percent in 2012 to `r round(subset(alevels_bme, subset=ACYEAR==2018&F_SEXID=="Female"&ECONMKR=="No econ A-level"&BME_MKR=="BME", select=percent_fem)[[1]])` percent in 2018.

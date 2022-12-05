@@ -1,0 +1,25 @@
+# Students' nationality {#sec:student-nationality}
+
+(ref:domicile-2-caption) UK economics students, by nationality
+
+```{r, fig.align="center", fig.cap="(ref:domicile-2-caption)", fig.placement="h", fig.fullwidth=TRUE, fig.height=3, fig.note="(ref:domicile-2-note)", label="domicile-2", fig.path='0-images/'}
+nationality_students.plot1 <- nationality_students %>%
+  filter(F_SEXID=="Female") %>%
+  ggplot(., aes(x=ACYEAR, y=percent_fem, linetype=factor(F_NATION))) +
+  geom_line() +
+  labs(x=NULL, y="%", title="% women, by nationality") +
+  scale_linetype_manual(values=c("solid", "dotted", "longdash"))
+nationality_students.plot2 <- nationality_levels %>%
+  filter(F_SEXID=="Female") %>%
+  mutate(F_XLEV601 = recode(F_XLEV601, "Masters" = "Master's")) %>%
+  ggplot(., aes(x=ACYEAR, y=percent_fem, linetype=factor(F_NATION))) +
+  geom_line() +
+  facet_wrap(vars(F_XLEV601)) +
+  labs(x=NULL, y="%", title="% women, by nationality and study level") +
+  theme(panel.spacing.x=unit(4, "mm")) +
+  scale_linetype_manual(values=c("solid", "dotted", "longdash")) +
+  scale_x_continuous(breaks = c(2012,2016))
+ggarrange(nationality_students.plot1, nationality_students.plot2, common.legend = TRUE, legend="bottom")
+```
+
+(ref:domicile-2-note) Left-hand graph plots the percentage of female students in economics by nationality; right-hand graph plots the percentages of women, by study level and nationality. Data are for full-time male and female students studying on a standard degree programme; students with unknown nationality are excluded. Data from HESA.

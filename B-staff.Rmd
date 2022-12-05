@@ -1,0 +1,36 @@
+# Staff on fixed term contracts {#sec:temp-appendix}
+
+(ref:fixed-term-2-caption) UK academic economists on fixed-term contracts, by function and part-time status
+
+```{r, fig.align="center", fig.cap="(ref:fixed-term-2-caption)", fig.placement="h", fig.height=5, fig.note="(ref:fixed-term-2-note)", label="fixed-term-2", fig.path='0-images/'}
+temp.plot3 <- temp_emp %>%
+  filter(F_SEXID=="Female") %>%
+  ggplot(., aes(x=ACYEAR, y=percent_fem, group=factor(F_ACEMPFUN), linetype=factor(F_ACEMPFUN))) +
+  geom_line() +
+  scale_linetype_manual(values=c("dashed", "dotted", "solid")) +
+  labs(x=NULL, y="%", title="% women, by employment function") +
+  guides(linetype="none")
+temp.plot4 <- ggplot(temp_emp, aes(x=ACYEAR, y=percent_dist, colour=factor(F_SEXID), linetype=factor(F_ACEMPFUN))) +
+  geom_line() +
+  scale_linetype_manual(values=c("dashed", "dotted", "solid")) +
+  facet_wrap(vars(F_ACEMPFUN)) +
+  labs(x=NULL, y="%", title="Distribution across function, by gender") +
+  theme(panel.spacing.x=unit(4, "mm")) +
+  scale_x_continuous(breaks = c(2012,2016))
+temp.plot5 <- temp_parttime %>%
+  filter(F_SEXID=="Female") %>%
+  ggplot(., aes(x=ACYEAR, y=percent_fem, group=factor(F_XMOEMP01), linetype=factor(F_XMOEMP01))) +
+  geom_line() +
+  scale_linetype_manual(values=c("longdash", "dotdash")) +
+  labs(x=NULL, y="%", title="% women, by full-/part-time") +
+  guides(linetype="none")
+temp.plot6 <- ggplot(temp_parttime, aes(x=ACYEAR, y=percent_dist, colour=factor(F_SEXID), linetype=factor(F_XMOEMP01))) +
+  geom_line() +
+  scale_linetype_manual(values=c("longdash", "dotdash")) +
+  facet_wrap(vars(F_XMOEMP01)) +
+  labs(x=NULL, y="%", title="Distribution across full-/part-time, by gender") +
+  theme(panel.spacing.x=unit(4, "mm"))
+ggarrange(ggarrange(temp.plot3, temp.plot4, legend="bottom", common.legend = TRUE), ggarrange(temp.plot5, temp.plot6, legend="bottom", common.legend=TRUE), nrow=2, ncol=1)
+```
+
+(ref:fixed-term-2-note) Top left-hand graph plots the percentage of academics on fixed-term contracts who are women, broken down by academic employment function; top right-hand graph shows the percentages of all women and all men on fixed-term contracts across academic employment function. Bottom left-hand graph plots the percentage of academics on fixed-term contracts who are women, broken down by full- and part-time status; bottom right-hand graph shows the percentages of all women and all men on fixed-term contracts across full-/part-time status. Data restricted to academic economists (including teaching/research assistants) working both full- and part-time in teaching-only, research-only or T&R positions. Data from HESA.
