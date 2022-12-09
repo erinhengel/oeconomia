@@ -14,7 +14,7 @@ temp.plot4 <- ggplot(temp_emp, aes(x=ACYEAR, y=percent_dist, colour=factor(F_SEX
   geom_line() +
   scale_linetype_manual(values=c("dashed", "dotted", "solid")) +
   facet_wrap(vars(F_ACEMPFUN)) +
-  labs(x=NULL, y="%", title="Distribution across function, by gender") +
+  labs(x=NULL, y=NULL, title="Distribution across function, by gender") +
   theme(panel.spacing.x=unit(4, "mm")) +
   scale_x_continuous(breaks = c(2012,2016))
 temp.plot5 <- temp_parttime %>%
@@ -28,7 +28,7 @@ temp.plot6 <- ggplot(temp_parttime, aes(x=ACYEAR, y=percent_dist, colour=factor(
   geom_line() +
   scale_linetype_manual(values=c("longdash", "dotdash")) +
   facet_wrap(vars(F_XMOEMP01)) +
-  labs(x=NULL, y="%", title="Distribution across full-/part-time, by gender") +
+  labs(x=NULL, y=NULL, title="Distribution across full-/part-time, by gender") +
   theme(panel.spacing.x=unit(4, "mm"))
 ggarrange(ggarrange(temp.plot3, temp.plot4, legend="bottom", common.legend = TRUE), ggarrange(temp.plot5, temp.plot6, legend="bottom", common.legend=TRUE), nrow=2, ncol=1)
 ```

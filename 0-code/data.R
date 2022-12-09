@@ -1,5 +1,5 @@
 # Staff data
-staff_data <- read_csv("0-data/149756_Item2_Data.csv")
+staff_data <- read_csv("0-data/149756_Item2_Data.csv", show_col_types = FALSE)
 
 econ_staff <- staff_data %>%
   filter(F_ACEMPFUN!=4 & F_ACEMPFUN!=9 & F_ACEMPFUN!='X') %>% # Exclude staff not on an academic contract (4), not teaching and/or research (9) and not applicable/not required (X).
@@ -56,7 +56,7 @@ econ_students <- student_data %>%
   )
 
 # Past RES reports.
-reports <- read_csv("0-data/reports.csv")
+reports <- read_csv("0-data/reports.csv", show_col_types = FALSE)
 
 # Staff summary data
 

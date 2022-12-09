@@ -15,7 +15,7 @@ nationality_students.plot2 <- nationality_levels %>%
   ggplot(., aes(x=ACYEAR, y=percent_fem, linetype=factor(F_NATION))) +
   geom_line() +
   facet_wrap(vars(F_XLEV601)) +
-  labs(x=NULL, y="%", title="% women, by nationality and study level") +
+  labs(x=NULL, y=NULL, title="% women, by nationality and study level") +
   theme(panel.spacing.x=unit(4, "mm")) +
   scale_linetype_manual(values=c("solid", "dotted", "longdash")) +
   scale_x_continuous(breaks = c(2012,2016))

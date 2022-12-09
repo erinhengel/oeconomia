@@ -15,7 +15,7 @@ alevels.plot <- alevels %>%
   ggplot(., aes(x=ACYEAR, y=percent_fem, linetype=factor(ECONMKR))) +
   geom_line() +
   ylim(25, 32) +
-  labs(x=NULL, y="%", title="% undergraduate women, by A-level subject") +
+  labs(x=NULL, y=NULL, title="% undergraduate women, by A-level subject") +
   scale_linetype_manual(values=c("longdash", "dotdash"))
 school_bme.plot <- school_bme %>%
   filter(F_SEXID=="Female") %>%
@@ -31,7 +31,7 @@ alevels_bme.plot <- alevels_bme %>%
   ggplot(., aes(x=ACYEAR, y=percent_fem, linetype=factor(BME_MKR))) +
   geom_line() +
   facet_wrap(vars(ECONMKR)) +
-  labs(x=NULL, y="%", title="% undergraduate women, by A-level subject and BME") +
+  labs(x=NULL, y=NULL, title="% undergraduate women, by A-level subject and BME") +
   guides(linetype="none") +
   theme(panel.spacing.x=unit(4, "mm")) +
   ylim(20,38) +
