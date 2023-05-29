@@ -11,7 +11,7 @@ abstract: |
   This paper reports on women’s representation in UK economics over the last quarter century. While progress has been made, women in 2018 were still only 32 percent of economics undergraduate students and 26 percent of academic economists. Our data also suggest several areas of stagnation and retreat. First, the percentage of female UK nationals studying economics is low and falling over time. Second, female economists are substantially more likely to be employed at lower academic ranks and in fixed-term---and generally lower status---teaching- and research-only positions. Third, the representation of women is especially low among ethnic minorities studying for an economics Ph.D. And finally, the percentage of economics professors with Asian ethnicity who are women has been falling over time, and at no point between 2012--2018 was a Black female professor of economics employed anywhere in the UK.
 acknowledgements: |
   All errors are our own. We are especially indebted to Almudena Sevilla for supporting the project, two anonymous referees and Danula Kankanam Gamage and Xianyue Liu for excellent research assistance. We also thank current and former members of the Royal Economic Society Women's Committee—and in particular Heather Joshi, Karen Mumford, Denise Osborn, Almudena Sevilla and Sarah Smith—for extensive comments and feedback on an earlier draft. Parts of this paper were originally released as a report to the Royal Economic Society's Women's Committee, titled “The Gender Imbalance in UK Economics”, co-authored with Danula Kankanam Gamage and Xianyue Liu. The data copyright is held by the Royal Economic Society and the Higher Education Statistics Agency (HESA). Neither HESA Limited nor HESA Services Limited are responsible for any inferences or conclusions derived by the authors from the data or other information supplied by HESA Limited or HESA Services Limited.
-date: "`r format(Sys.time(), '%B %Y')`"
+date: "December 2022"
 keywords:
   - Gender
   - Diversity
@@ -23,9 +23,9 @@ jel:
   - J44
 output:
   bookdown::pdf_document2:
-    template: 0-templates/paper-biber.tex
+    template: 0-templates/paper-bibtex.tex
     latex_engine: xelatex
-    citation_package: biblatex
+    citation_package: natbib
     keep_tex: yes
     pandoc_args: ["--filter", "pandoc-crossref"]
 bibliography: 0-bib/references.bib
@@ -66,9 +66,9 @@ source('0-code/data.R')
 
 # References {-}
 
-\printbibliography[heading=none]
+<!-- \printbibliography[heading=none] -->
 
-<!-- \bibliography{0-bib/references} -->
+\bibliography{0-bib/references}
 
 \newpage
 
